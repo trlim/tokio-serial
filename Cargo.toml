@@ -12,3 +12,6 @@ mio = "0.6"
 futures = "0.1"
 tokio-core = "0.1"
 mio-serial = { git = "https://github.com/trlim/mio-serial", branch = "tokio" }
+
+[dev-dependencies]
+dotenv = "0.8"

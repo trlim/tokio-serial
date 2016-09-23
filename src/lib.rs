@@ -7,6 +7,7 @@
 #![deny(missing_docs)]
 
 extern crate futures;
+#[macro_use]
 extern crate tokio_core;
 extern crate mio_serial;
 
@@ -19,12 +20,8 @@ use tokio_core::reactor::{PollEvented, Handle};
 use tokio_core::io::Io;
 
 // Re-exports
-pub use mio_serial::{PortSettings};
-// pub use mio_serial::BaudRate::*;
-// pub use mio_serial::CharSize::*;
-// pub use mio_serial::Parity::*;
-// pub use mio_serial::StopBits::*;
-// pub use mio_serial::FlowControl::*;
+pub use mio_serial::PortSettings;
+pub use mio_serial::{BaudRate, CharSize, Parity, StopBits, FlowControl};
 
 /// A structure representing an open serial port.
 pub struct SerialPort {
@@ -137,7 +134,72 @@ mod sys {
 
 #[cfg(test)]
 mod tests {
+    extern crate dotenv;
+
+    use self::dotenv::dotenv;
+    use std::env;
+    use std::io::{self, Read, Write};
+
+    use futures::{Future, Poll};
+    use tokio_core::reactor::Core;
+
+    use super::*;
+
+    struct WritePort {
+        port: SerialPort,
+    }
+
+    impl Future for WritePort {
+        type Item = ();
+        type Error = io::Error;
+
+        fn poll(&mut self) -> Poll<(), io::Error> {
+            let n = try_nb!(self.port.write(b"1234"));
+            assert!(n > 0);
+            Ok(().into())
+        }
+    }
+
+    struct ReadPort {
+        port: SerialPort,
+    }
+
+    impl Future for ReadPort {
+        type Item = ();
+        type Error = io::Error;
+
+        fn poll(&mut self) -> Poll<(), io::Error> {
+            let mut buf = [0; 32];
+            let n = try_nb!(self.port.read(&mut buf));
+            assert!(n > 0);
+            Ok(().into())
+        }
+    }
+
     #[test]
-    fn it_works() {
+    fn futures() {
+        dotenv().ok();
+
+        let port_name = env::var("SERIAL_PORT")
+            .expect("Environment variable SERIAL_PORT must be specified");
+
+        let mut core = Core::new().unwrap();
+
+        let mut serial_port = SerialPort::open_with_settings(port_name.as_str(),
+                                                             &PortSettings {
+                                                                 baud_rate: BaudRate::Baud115200,
+                                                                 char_size: CharSize::Bits8,
+                                                                 parity: Parity::ParityNone,
+                                                                 stop_bits: StopBits::Stop1,
+                                                                 flow_control:
+                                                                     FlowControl::FlowNone,
+                                                             },
+                                                             &core.handle())
+            .unwrap();
+
+        let write = WritePort { port: serial_port };
+        let read = ReadPort { port: serial_port };
+
+        assert!(core.run(write.join(read)).is_ok());
     }
 }
