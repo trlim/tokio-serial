@@ -122,13 +122,11 @@ impl<'a> Io for &'a SerialPort {
     }
 }
 
-/*
 impl fmt::Debug for SerialPort {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.io.get_ref().fmt(f)
     }
 }
-*/
 
 #[cfg(unix)]
 mod sys {
