@@ -11,4 +11,4 @@ Serial port for Tokio
 mio = "0.6"
 futures = "0.1"
 tokio-core = "0.1"
-mio-serial = { git = "https://github.com/trlim/mio-serial", rev = "ea45aaf" }
+mio-serial = { git = "https://github.com/trlim/mio-serial", branch = "tokio" }
