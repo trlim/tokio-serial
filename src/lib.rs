@@ -49,6 +49,16 @@ impl SerialPort {
         Ok(SerialPort { io: io })
     }
 
+    /// Creates a new independently owned handle to the underlying serial port.
+    ///
+    /// The returned `SerialPort` is a reference to the same state that this object references.
+    /// Both handles will read and write.
+    pub fn try_clone(&self, handle: &Handle) -> io::Result<SerialPort> {
+        let port = try!(self.io.get_ref().try_clone());
+        let io = try!(PollEvented::new(port, handle));
+        Ok(SerialPort { io: io })
+    }
+
     /// Test whether this serial port is ready to be read or not.
     pub fn poll_read(&self) -> Async<()> {
         self.io.poll_read()
@@ -185,20 +195,21 @@ mod tests {
 
         let mut core = Core::new().unwrap();
 
-        let mut serial_port = SerialPort::open_with_settings(port_name.as_str(),
-                                                             &PortSettings {
-                                                                 baud_rate: BaudRate::Baud115200,
-                                                                 char_size: CharSize::Bits8,
-                                                                 parity: Parity::ParityNone,
-                                                                 stop_bits: StopBits::Stop1,
-                                                                 flow_control:
-                                                                     FlowControl::FlowNone,
-                                                             },
-                                                             &core.handle())
+        let serial_port = SerialPort::open_with_settings(port_name.as_str(),
+                                                         &PortSettings {
+                                                             baud_rate: BaudRate::Baud115200,
+                                                             char_size: CharSize::Bits8,
+                                                             parity: Parity::ParityNone,
+                                                             stop_bits: StopBits::Stop1,
+                                                             flow_control: FlowControl::FlowNone,
+                                                         },
+                                                         &core.handle())
             .unwrap();
 
+        let clone_port = serial_port.try_clone(&core.handle()).unwrap();
+
         let write = WritePort { port: serial_port };
-        let read = ReadPort { port: serial_port };
+        let read = ReadPort { port: clone_port };
 
         assert!(core.run(write.join(read)).is_ok());
     }
