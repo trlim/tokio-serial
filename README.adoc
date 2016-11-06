@@ -1,0 +1,36 @@
+# tokio-serial
+
+An implementation of serial ports for Tokio
+
+image::https://travis-ci.org/trlim/tokio-serial.svg?branch=master[Build Status, link="https://travis-ci.org/trlim/tokio-serial"]
+
+link:https://trlim.github.io/tokio-serial[Documentation]
+
+## Usage
+
+First, add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+tokio-serial = "0.1"
+```
+
+Next, add this to your crate:
+
+```rust
+extern crate tokio_serial;
+```
+
+== Compatibility
+
+The following platforms are confirmed to be compatible:
+
+* macOS (x86_64)
+
+# License
+
+`tokio-serial` is primarily distributed under the terms of both the MIT
+license and the Apache License (Version 2.0), with portions covered by various
+BSD-like licenses.
+
+See LICENSE-APACHE, and LICENSE-MIT for details.

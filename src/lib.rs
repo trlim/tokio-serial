@@ -20,8 +20,8 @@ use tokio_core::reactor::{PollEvented, Handle};
 use tokio_core::io::Io;
 
 // Re-exports
-pub use mio_serial::PortSettings;
-pub use mio_serial::{BaudRate, CharSize, Parity, StopBits, FlowControl};
+#[doc(no_inline)]
+pub use mio_serial::{PortSettings, BaudRate, CharSize, Parity, StopBits, FlowControl};
 
 /// A structure representing an open serial port.
 pub struct SerialPort {

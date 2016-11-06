@@ -3,15 +3,19 @@ name = "tokio-serial"
 version = "0.1.0"
 license = "MIT/Apache-2.0"
 authors = ["Tae-il Lim <trlim@iotok.kr>"]
+readme = "README.adoc"
+homepage = "https://github.com/trlim/tokio-serial"
+repository = "https://github.com/trlim/tokio-serial"
+documentation = "https://trlim.github.io/tokio-serial"
+keywords = ["tokio", "serial"]
 description = """
-Serial port for Tokio
+Serial ports for Tokio
 """
 
 [dependencies]
-mio = "0.6"
 futures = "0.1"
 tokio-core = "0.1"
-mio-serial = { git = "https://github.com/trlim/mio-serial", branch = "tokio" }
+mio-serial = { git = "https://github.com/trlim/mio-serial" }
 
 [dev-dependencies]
 dotenv = "0.8"
