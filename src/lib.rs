@@ -32,14 +32,16 @@ impl SerialPort {
     /// open serial port named by port_name with custom settings.
     ///
     pub fn open_with_settings<T: AsRef<OsStr> + ?Sized>(port_name: &T,
-            settings: &PortSettings,
-            handle: &Handle) -> io::Result<SerialPort> {
+                                                        settings: &PortSettings,
+                                                        handle: &Handle)
+                                                        -> io::Result<SerialPort> {
         SerialPort::_open_with_settings(port_name, settings, handle)
     }
 
     fn _open_with_settings<T: AsRef<OsStr> + ?Sized>(port_name: &T,
-            settings: &PortSettings,
-            handle: &Handle) -> io::Result<SerialPort> {
+                                                     settings: &PortSettings,
+                                                     handle: &Handle)
+                                                     -> io::Result<SerialPort> {
         let port = try!(mio_serial::SerialPort::open_with_settings(port_name, settings));
         SerialPort::new(port, handle)
     }
