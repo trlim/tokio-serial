@@ -147,9 +147,10 @@ mod tests {
     use self::dotenv::dotenv;
     use std::env;
     use std::io::{self, Read, Write};
+    use std::time::Duration;
 
     use futures::{Future, Poll};
-    use tokio_core::reactor::Core;
+    use tokio_core::reactor::{Core, Timeout};
 
     use super::*;
 
@@ -208,7 +209,9 @@ mod tests {
 
         let write = WritePort { port: serial_port };
         let read = ReadPort { port: clone_port };
+        let timeout = Timeout::new(Duration::from_millis(5000), &core.handle()).unwrap();
 
-        assert!(core.run(write.join(read)).is_ok());
+        assert!(core.run(write.join(read.select(timeout).map(|(v, _)| v).map_err(|(e, _)| e)))
+            .is_ok());
     }
 }
