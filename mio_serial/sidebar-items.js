@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SerialPort","A serial port for `mio`."]]});

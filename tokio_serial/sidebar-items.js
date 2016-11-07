@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SerialPort","A structure representing an open serial port."]]});
